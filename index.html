@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VØID_X | IONIC EDITION</title>
+    <title>VØID_X | SUPREME IONIC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -12,57 +12,49 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&display=swap');
         
-        :root { --neon: #00f3ff; --shadow-glow: rgba(0, 243, 255, 0.3); }
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; }
-
-        /* أيونية: خلفية سائلة */
-        .ionic-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 100%);
-        }
+        :root { --neon: #00f3ff; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; user-select: none; }
 
         .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
         
-        .video-segment { 
-            height: 100vh; width: 100vw; scroll-snap-align: start; 
-            position: relative; padding: 12px; box-sizing: border-box; 
-        }
+        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; padding: 12px; box-sizing: border-box; }
 
-        /* حاوية الفيديو الأيونية */
+        /* إطار أيوني متطور */
         .crystal-frame { 
             width: 100%; height: 100%; border-radius: 45px; overflow: hidden; position: relative; 
-            border: 1px solid rgba(255,255,255,0.08); 
-            box-shadow: 0 0 40px -15px var(--neon);
-            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 0 50px -20px var(--neon);
+            transition: 0.8s ease;
         }
 
         video { width: 100%; height: 100%; object-fit: cover; }
 
         /* العلامة المائية */
         .watermark {
-            position: absolute; top: 20%; right: -10%; 
-            font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900;
-            color: rgba(255,255,255,0.03); transform: rotate(-45deg);
-            pointer-events: none; white-space: nowrap; user-select: none;
+            position: absolute; top: 25%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900;
+            color: rgba(255,255,255,0.03); pointer-events: none; white-space: nowrap;
         }
 
-        /* واجهة الأزرار */
-        .glass-ui { background: rgba(0,0,0,0.35); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); }
-        .side-actions { position: absolute; left: 22px; bottom: 130px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        /* واجهة الأزرار الأيونية */
+        .glass-ui { background: rgba(0,0,0,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .side-actions { position: absolute; left: 22px; bottom: 130px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
         
         .action-btn { 
-            width: 58px; height: 58px; border-radius: 24px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; transition: 0.4s; color: var(--neon);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 56px; height: 56px; border-radius: 20px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; transition: 0.3s; color: var(--neon);
         }
+        
+        /* أيونة الأدمن */
+        .admin-btn { background: rgba(255, 255, 255, 0.05) !important; color: #ffaa00 !important; border-color: rgba(255, 170, 0, 0.2) !important; }
 
-        /* الهاشتاجات الحديثة */
-        .video-meta { position: absolute; bottom: 40px; right: 25px; z-index: 50; pointer-events: none; }
+        /* معلومات الفيديو */
+        .video-meta { position: absolute; bottom: 40px; right: 25px; z-index: 50; text-align: right; }
         .hashtag { 
-            font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--neon); 
-            background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 50px;
-            border: 1px solid var(--neon); text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--neon); 
+            background: rgba(0,0,0,0.6); padding: 5px 15px; border-radius: 50px;
+            border: 1px solid var(--neon); display: inline-block; margin-top: 5px;
         }
 
         /* لوحة التحكم */
@@ -71,22 +63,14 @@
             display: none; flex-direction: column; padding: 40px 20px; 
         }
 
-        /* زر الأدمن المخفي (فوق زر اللايك) */
-        .hidden-admin { 
-            position: absolute; top: -15px; left: 0; width: 100%; height: 20px; 
-            z-index: 110; cursor: pointer; opacity: 0;
-        }
-
         nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 88%; max-width: 400px; height: 70px; border-radius: 30px; display: flex; justify-content: space-around; align-items: center; z-index: 200; }
     </style>
 </head>
 <body>
 
-    <div class="ionic-bg"></div>
-
     <header class="fixed top-8 left-0 w-full z-[200] flex justify-center pointer-events-none">
-        <div class="glass-ui px-8 py-2 rounded-full border border-white/10">
-            <span class="font-[Orbitron] font-black tracking-[8px] text-sm neon-text">VØID_X</span>
+        <div class="glass-ui px-10 py-2 rounded-full border border-white/10">
+            <span class="font-[Orbitron] font-black tracking-[10px] text-sm text-white">VØID_X</span>
         </div>
     </header>
 
@@ -94,31 +78,34 @@
         </main>
 
     <nav class="glass-ui">
-        <i class="fas fa-ghost opacity-30 text-xl"></i>
-        <div id="upload-trigger" class="w-14 h-14 bg-white text-black rounded-[22px] flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.3)] active:scale-90 transition-transform cursor-pointer">
+        <i class="fas fa-microchip opacity-30 text-xl"></i>
+        <div id="upload-trigger" class="w-14 h-14 bg-white text-black rounded-[22px] flex items-center justify-center shadow-2xl active:scale-90 transition-transform cursor-pointer">
             <i class="fas fa-plus text-lg"></i>
         </div>
-        <i class="fas fa-comment-alt opacity-30 text-xl" onclick="toggleChatWithAd()"></i>
+        <i class="fas fa-layer-group opacity-30 text-xl" onclick="toggleChatWithAd()"></i>
     </nav>
 
     <div id="admin-overlay" class="admin-panel">
         <div class="flex justify-between items-center mb-10">
-            <h2 class="font-[Orbitron] text-xl tracking-widest text-[#00f3ff]">ROOT_ACCESS</h2>
-            <button onclick="toggleAdmin()" class="bg-white/5 border border-white/10 px-8 py-2 rounded-full text-xs">EXIT</button>
+            <h2 class="font-[Orbitron] text-xl text-[#ffaa00]">TERMINAL_ROOT</h2>
+            <button onclick="toggleAdmin()" class="bg-white/10 px-8 py-2 rounded-full text-xs">EXIT</button>
         </div>
         <div id="admin-list" class="space-y-4 overflow-y-auto"></div>
     </div>
 
     <script>
         const ADMIN_PASS = "1234";
-        const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
+        const AD_LINKS = [
+            "https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c",
+            "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"
+        ];
         let currentAd = 0;
 
         const firebaseConfig = { databaseURL: "https://goms-8fdfd-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const hashtags = ["#VOID_X", "#CYBER_SPACE", "#IONIC_CORE", "#FUTURE_VIBES", "#SHΔDØW", "#DIGITAL_GHOST"];
+        const tags = ["#VOID_X", "#IONIC_GEN", "#CYBER_ELITE", "#NEON_DREAMS", "#ROOT_ACCESS"];
 
         db.ref('videos').on('value', (snapshot) => {
             const container = document.getElementById('video-stack');
@@ -129,13 +116,13 @@
             
             Object.keys(data).reverse().forEach((id) => {
                 const vid = data[id];
-                const randTag = hashtags[Math.floor(Math.random() * hashtags.length)];
+                const randTag = tags[Math.floor(Math.random() * tags.length)];
                 
                 const section = document.createElement('section');
                 section.className = 'video-segment';
                 section.innerHTML = `
                     <div class="crystal-frame">
-                        <div class="watermark">VØID_X CORE</div>
+                        <div class="watermark">VØID_X SUPREME</div>
                         <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
                         
                         <div class="video-meta">
@@ -143,16 +130,20 @@
                         </div>
 
                         <div class="side-actions">
-                            <div class="relative">
-                                <div class="hidden-admin" onclick="checkAdminAuth()"></div>
-                                <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
-                                    <i class="fas fa-bolt"></i>
-                                    <span class="text-[10px] mt-1 font-black">${vid.likes || 0}</span>
-                                </div>
+                            <div class="action-btn glass-ui admin-btn" onclick="checkAdminAuth()">
+                                <i class="fas fa-user-gear"></i>
+                                <span class="text-[8px] mt-1">ADMIN</span>
                             </div>
+                            
+                            <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
+                                <i class="fas fa-bolt"></i>
+                                <span class="text-[10px] mt-1 font-black">${vid.likes || 0}</span>
+                            </div>
+                            
                             <div class="action-btn glass-ui" onclick="toggleChatWithAd()">
-                                <i class="fas fa-atom"></i>
+                                <i class="fas fa-terminal"></i>
                             </div>
+                            
                             <div class="action-btn glass-ui" onclick="shareWithAd()">
                                 <i class="fas fa-share-nodes"></i>
                             </div>
@@ -162,10 +153,10 @@
                 container.appendChild(section);
 
                 const card = document.createElement('div');
-                card.className = "flex items-center gap-4 p-5 glass-ui rounded-[30px]";
+                card.className = "flex items-center gap-4 p-5 glass-ui rounded-[30px] border-white/5";
                 card.innerHTML = `<video class="w-16 h-16 rounded-2xl object-cover" src="${vid.url}"></video>
                                   <div class="flex-1 text-[10px] font-[Orbitron] opacity-40">${id}</div>
-                                  <button onclick="deleteVideo('${id}')" class="text-red-500 w-10 h-10 rounded-full hover:bg-red-500/10 transition-all">
+                                  <button onclick="deleteVideo('${id}')" class="text-red-500 w-10 h-10 rounded-full bg-red-500/10">
                                     <i class="fas fa-trash-alt"></i>
                                   </button>`;
                 adminList.appendChild(card);
@@ -176,10 +167,11 @@
         function togglePlay(v) { v.paused ? v.play() : v.pause(); }
         function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % AD_LINKS.length; }
         function toggleLikeWithAd(id) { triggerAd(); db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1); }
-        function checkAdminAuth() { if(prompt("ENTER KEY:") === ADMIN_PASS) toggleAdmin(); }
+        function checkAdminAuth() { if(prompt("ACCESS CODE:") === ADMIN_PASS) toggleAdmin(); }
         function toggleAdmin() { const a = document.getElementById('admin-overlay'); a.style.display = (a.style.display === 'flex') ? 'none' : 'flex'; }
         function deleteVideo(id) { if(confirm("PERMANENT ERASE?")) db.ref(`videos/${id}`).remove(); }
         function shareWithAd() { triggerAd(); if(navigator.share) navigator.share({title: 'VØID_X', url: window.location.href}); }
+        function toggleChatWithAd() { triggerAd(); alert("Chat System Initializing..."); }
 
         const myWidget = cloudinary.createUploadWidget({ cloudName: "dpcysggzh", uploadPreset: "poro_go" }, (err, res) => {
             if (!err && res.event === "success") db.ref('videos/').push({ url: res.info.secure_url, timestamp: Date.now(), likes: 0 });
