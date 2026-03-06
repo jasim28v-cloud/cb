@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SHΔDØW | CRYSTAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&display=swap');
+        :root { --accent-color: #ffffff; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; }
+        .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .scroll-engine::-webkit-scrollbar { display: none; }
+        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; padding: 12px; box-sizing: border-box; }
+        .crystal-container { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #000; shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .glass-ui { background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); }
+        .side-actions { position: absolute; left: 20px; bottom: 110px; display: flex; flex-direction: column; gap: 18px; z-index: 100; }
+        .action-btn { width: 52px; height: 52px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; }
+        .video-info { position: absolute; bottom: 30px; right: 25px; text-align: right; z-index: 40; max-width: 70%; }
+        header { position: fixed; top: 25px; left: 25px; right: 25px; z-index: 200; height: 55px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; height: 65px; border-radius: 25px; display: flex; justify-content: space-around; align-items: center; z-index: 200; }
+    </style>
+</head>
+<body>
+
+    <header class="glass-ui">
+        <h1 class="font-[Orbitron] font-black tracking-widest text-sm">CRYSTAL_CORE</h1>
+        <i class="fas fa-fingerprint opacity-50" onclick="checkAdminAuth()"></i>
+    </header>
+
+    <main class="scroll-engine" id="video-stack">
+        <div class="h-full flex items-center justify-center flex-col gap-4">
+            <div class="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+            <span class="text-[10px] font-[Orbitron] tracking-widest opacity-40">LOADING_SYSTEM...</span>
+        </div>
+    </main>
+
+    <nav class="glass-ui">
+        <i class="fas fa-home opacity-100 text-lg"></i>
+        <div id="upload-trigger" class="w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
+            <i class="fas fa-plus"></i>
+        </div>
+        <i class="fas fa-comment-dots opacity-40 text-lg" onclick="toggleChatWithAd()"></i>
+    </nav>
+
+    <div id="chat-overlay" class="fixed inset-0 z-[300] hidden flex-col bg-black/80 backdrop-blur-2xl p-6">
+        <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+            <span class="font-[Orbitron] text-xs tracking-tighter">COMMS_CHANNEL</span>
+            <i class="fas fa-times opacity-50 p-2" onclick="toggleChat()"></i>
+        </div>
+        <div id="chat-box" class="flex-1 overflow-y-auto space-y-4"></div>
+        <div class="mt-4 flex gap-2 glass-ui p-2 rounded-2xl">
+            <input type="text" id="msg-input" class="flex-1 bg-transparent p-3 outline-none text-sm" placeholder="Message..." onkeypress="handleKey(event)">
+            <button onclick="sendChat()" class="bg-white text-black px-5 rounded-xl"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const AD_LINKS = [
+            "https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c",
+            "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"
+        ];
+        let currentAd = 0;
+        const SHADOW_ID = 'UX_' + Math.random().toString(36).substr(2, 4).toUpperCase();
+
+        const firebaseConfig = { databaseURL: "https://goms-8fdfd-default-rtdb.firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function triggerAd() {
+            window.open(AD_LINKS[currentAd], '_blank');
+            currentAd = (currentAd + 1) % AD_LINKS.length;
+        }
+
+        db.ref('videos').on('value', (snapshot) => {
+            const container = document.getElementById('video-stack');
+            const data = snapshot.val();
+            container.innerHTML = '';
+            if(!data) return;
+            
+            Object.keys(data).reverse().forEach((id) => {
+                const vid = data[id];
+                const section = document.createElement('section');
+                section.className = 'video-segment';
+                section.innerHTML = `
+                    <div class="crystal-container">
+                        <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
+                        <div class="video-info">
+                            <div class="text-[10px] font-bold opacity-30 font-[Orbitron]">ID: ${id.substr(-6)}</div>
+                            <div class="text-sm font-light mt-1">المحتوى مشفر من قبل النظام</div>
+                        </div>
+                        <div class="side-actions">
+                            <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
+                                <i class="fas fa-heart text-white/80"></i>
+                                <span class="text-[10px] mt-1">${vid.likes || 0}</span>
+                            </div>
+                            <div class="action-btn glass-ui" onclick="toggleChatWithAd()">
+                                <i class="fas fa-comment-alt text-white/80"></i>
+                                <span class="text-[8px] mt-1">CHAT</span>
+                            </div>
+                            <div class="action-btn glass-ui" onclick="shareWithAd()">
+                                <i class="fas fa-share-nodes text-white/80"></i>
+                                <span class="text-[8px] mt-1">SEND</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+            initScroll();
+        });
+
+        function togglePlay(v) { v.paused ? v.play() : v.pause(); }
+
+        function toggleLikeWithAd(id) {
+            triggerAd();
+            db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1);
+        }
+
+        function toggleChatWithAd() {
+            triggerAd();
+            toggleChat();
+        }
+
+        function shareWithAd() {
+            triggerAd();
+            if(navigator.share) navigator.share({title: 'Crystal Genesis', url: window.location.href});
+        }
+
+        const myWidget = cloudinary.createUploadWidget({ 
+            cloudName: "dpcysggzh", 
+            uploadPreset: "poro_go"
+        }, (err, res) => {
+            if (!err && res.event === "success") {
+                db.ref('videos/').push({ url: res.info.secure_url, timestamp: Date.now(), likes: 0 });
+            }
+        });
+        document.getElementById("upload-trigger").onclick = () => { myWidget.open(); };
+
+        function toggleChat() { 
+            const c = document.getElementById('chat-overlay');
+            c.classList.toggle('hidden'); c.classList.toggle('flex');
+        }
+
+        function sendChat() { 
+            const i = document.getElementById('msg-input');
+            if(i.value.trim()){ 
+                db.ref('global_chat').push({user:SHADOW_ID, text:i.value});
+                i.value=''; 
+            } 
+        }
+
+        function handleKey(e) { if(e.key==='Enter') sendChat(); }
+
+        db.ref('global_chat').limitToLast(20).on('value', s => {
+            const b = document.getElementById('chat-box'); b.innerHTML = '';
+            const v = s.val(); 
+            if(v) Object.values(v).forEach(m => {
+                const d = document.createElement('div');
+                d.className = "bg-white/5 border border-white/10 p-4 rounded-2xl max-w-[85%]";
+                d.innerHTML = `<span class="text-[8px] font-[Orbitron] opacity-30 block mb-1">${m.user}</span><p class="text-sm">${m.text}</p>`;
+                b.appendChild(d);
+            });
+            b.scrollTop = b.scrollHeight;
+        });
+
+        function initScroll() {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    const v = e.target.querySelector('video');
+                    if(e.isIntersecting) v.play().catch(()=>{});
+                    else { v.pause(); v.currentTime = 0; }
+                });
+            }, { threshold: 0.8 });
+            document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
+        }
+
+        document.addEventListener('touchstart', () => { 
+            document.querySelectorAll('video').forEach(v => v.muted = false); 
+        }, { once: true });
+    </script>
+</body>
+</html>
