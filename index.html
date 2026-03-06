@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SHΔDØW | CRYSTAL ADMIN</title>
+    <title>SHΔDØW | CRYSTAL V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -11,38 +11,67 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&display=swap');
-        :root { --accent-color: #ffffff; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; }
+        
+        :root { --neon: #ffffff; --glass: rgba(255, 255, 255, 0.05); }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; user-select: none; }
+        
+        /* تأثير النبض البصري (Touch Ripple) */
+        .ripple {
+            position: fixed; width: 2px; height: 2px; background: var(--neon);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            animation: pulse-out 0.8s ease-out; z-index: 9999;
+        }
+        @keyframes pulse-out {
+            from { opacity: 1; width: 0; height: 0; box-shadow: 0 0 0px var(--neon); }
+            to { opacity: 0; width: 150px; height: 150px; box-shadow: 0 0 40px var(--neon); }
+        }
+
         .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
-        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; padding: 12px; box-sizing: border-box; }
-        .crystal-container { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #000; }
+        
+        .video-segment { 
+            height: 100vh; width: 100vw; scroll-snap-align: start; 
+            position: relative; padding: 15px; box-sizing: border-box; 
+            transition: background 1s ease;
+        }
+
+        /* حاوية الكريستال مع توهج متكيف */
+        .crystal-container { 
+            width: 100%; height: 100%; border-radius: 40px; overflow: hidden; position: relative; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 0 30px -10px var(--neon);
+            transition: box-shadow 1s ease, border 1s ease;
+        }
+
         video { width: 100%; height: 100%; object-fit: cover; }
-        .glass-ui { background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); }
-        .side-actions { position: absolute; left: 20px; bottom: 110px; display: flex; flex-direction: column; gap: 18px; z-index: 100; }
-        .action-btn { width: 52px; height: 52px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; }
-        header { position: fixed; top: 25px; left: 25px; right: 25px; z-index: 200; height: 55px; border-radius: 20px; display: flex; justify-content: center; align-items: center; padding: 0 20px; }
-        nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; height: 65px; border-radius: 25px; display: flex; justify-content: space-around; align-items: center; z-index: 200; }
-        .admin-panel { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); display: none; flex-direction: column; padding: 30px; overflow-y: auto; }
-        .admin-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
+
+        .glass-ui { 
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
+
+        .side-actions { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        
+        .action-btn { 
+            width: 55px; height: 55px; border-radius: 22px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; transition: 0.4s; color: var(--neon);
+        }
+        
+        .admin-panel { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.98); display: none; flex-direction: column; padding: 30px; }
+        
+        /* إخفاء أيقونة الأدمن بذكاء */
+        .admin-trigger { opacity: 0.05; transition: 0.3s; position: absolute; top: -40px; left: 0; width: 100%; height: 30px; }
+        .admin-trigger:hover { opacity: 0.5; }
     </style>
 </head>
-<body>
-
-    <header class="glass-ui">
-        <h1 class="font-[Orbitron] font-black tracking-widest text-sm">CRYSTAL_CORE</h1>
-    </header>
+<body onmousedown="createRipple(event)">
 
     <main class="scroll-engine" id="video-stack">
-        <div class="h-full flex items-center justify-center flex-col gap-4">
-            <div class="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-            <span class="text-[10px] font-[Orbitron] tracking-widest opacity-40">INITIALIZING_ADMIN_INTERFACE...</span>
-        </div>
-    </main>
+        </main>
 
-    <nav class="glass-ui">
-        <i class="fas fa-home opacity-100 text-lg"></i>
-        <div id="upload-trigger" class="w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer">
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[85%] max-w-[380px] h-16 glass-ui rounded-[25px] flex justify-around items-center z-[200]">
+        <i class="fas fa-th-large text-lg opacity-40"></i>
+        <div id="upload-trigger" class="w-12 h-12 bg-white text-black rounded-2xl flex items-center justify-center shadow-2xl cursor-pointer">
             <i class="fas fa-plus"></i>
         </div>
         <i class="fas fa-comment-dots opacity-40 text-lg cursor-pointer" onclick="toggleChatWithAd()"></i>
@@ -50,171 +79,105 @@
 
     <div id="admin-overlay" class="admin-panel">
         <div class="flex justify-between items-center mb-10">
-            <h2 class="text-xl font-[Orbitron] font-bold">SYSTEM_CONTROL</h2>
-            <button onclick="toggleAdmin()" class="bg-white/10 px-6 py-2 rounded-xl text-xs">EXIT</button>
+            <h2 class="font-[Orbitron] text-lg">SHΔDØW_CONSOLE</h2>
+            <button onclick="toggleAdmin()" class="bg-white/10 px-6 py-2 rounded-full">EXIT</button>
         </div>
-        <div id="admin-list"></div>
-    </div>
-
-    <div id="chat-overlay" class="fixed inset-0 z-[300] hidden flex-col bg-black/80 backdrop-blur-2xl p-6">
-        <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-            <span class="font-[Orbitron] text-xs tracking-tighter">COMMS_CHANNEL</span>
-            <i class="fas fa-times opacity-50 p-2 cursor-pointer" onclick="toggleChat()"></i>
-        </div>
-        <div id="chat-box" class="flex-1 overflow-y-auto space-y-4"></div>
-        <div class="mt-4 flex gap-2 glass-ui p-2 rounded-2xl">
-            <input type="text" id="msg-input" class="flex-1 bg-transparent p-3 outline-none text-sm" placeholder="Message..." onkeypress="handleKey(event)">
-            <button onclick="sendChat()" class="bg-white text-black px-5 rounded-xl"><i class="fas fa-paper-plane"></i></button>
-        </div>
+        <div id="admin-list" class="space-y-4"></div>
     </div>
 
     <script>
         const ADMIN_PASS = "1234";
-        const AD_LINKS = [
-            "https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c",
-            "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"
-        ];
+        const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
         let currentAd = 0;
-        const SHADOW_ID = 'UX_' + Math.random().toString(36).substr(2, 4).toUpperCase();
 
         const firebaseConfig = { databaseURL: "https://goms-8fdfd-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function triggerAd() {
-            window.open(AD_LINKS[currentAd], '_blank');
-            currentAd = (currentAd + 1) % AD_LINKS.length;
+        // 1. وظيفة النبض البصري
+        function createRipple(e) {
+            const ripple = document.createElement("div");
+            ripple.className = "ripple";
+            ripple.style.left = `${e.clientX}px`;
+            ripple.style.top = `${e.clientY}px`;
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
         }
 
         db.ref('videos').on('value', (snapshot) => {
             const container = document.getElementById('video-stack');
             const adminList = document.getElementById('admin-list');
             const data = snapshot.val();
-            container.innerHTML = '';
-            adminList.innerHTML = '';
+            container.innerHTML = ''; adminList.innerHTML = '';
             if(!data) return;
             
             Object.keys(data).reverse().forEach((id) => {
                 const vid = data[id];
-                
-                // عرض الفيديو في الواجهة الرئيسية
                 const section = document.createElement('section');
                 section.className = 'video-segment';
                 section.innerHTML = `
                     <div class="crystal-container">
                         <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
                         <div class="side-actions">
-                            <div class="action-btn glass-ui mb-2" onclick="checkAdminAuth()">
-                                <i class="fas fa-user-shield text-white/40 text-sm"></i>
-                            </div>
-                            <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
-                                <i class="fas fa-heart text-white/80"></i>
-                                <span class="text-[10px] mt-1">${vid.likes || 0}</span>
+                            <div class="relative">
+                                <div class="admin-trigger" onclick="checkAdminAuth()"></div>
+                                <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
+                                    <i class="fas fa-bolt"></i>
+                                    <span class="text-[10px] mt-1 font-bold">${vid.likes || 0}</span>
+                                </div>
                             </div>
                             <div class="action-btn glass-ui" onclick="toggleChatWithAd()">
-                                <i class="fas fa-comment-alt text-white/80"></i>
+                                <i class="fas fa-terminal"></i>
                             </div>
                             <div class="action-btn glass-ui" onclick="shareWithAd()">
-                                <i class="fas fa-share-nodes text-white/80"></i>
+                                <i class="fas fa-rocket"></i>
                             </div>
                         </div>
                     </div>
                 `;
                 container.appendChild(section);
 
-                // إضافة الفيديو للوحة تحكم الأدمن
                 const card = document.createElement('div');
-                card.className = 'admin-card';
-                card.innerHTML = `
-                    <video class="w-20 h-20 object-cover rounded-xl" src="${vid.url}"></video>
-                    <div class="flex-1">
-                        <div class="text-[10px] opacity-40 font-[Orbitron]">${id}</div>
-                        <div class="text-[10px] mt-1">LIKES: ${vid.likes || 0}</div>
-                    </div>
-                    <button onclick="deleteVideo('${id}')" class="w-10 h-10 bg-red-500/10 text-red-500 rounded-full">
-                        <i class="fas fa-trash-alt text-xs"></i>
-                    </button>
-                `;
+                card.className = "flex items-center gap-4 p-4 glass-ui rounded-2xl";
+                card.innerHTML = `<video class="w-16 h-16 rounded-lg" src="${vid.url}"></video>
+                                  <i class="fas fa-trash text-red-500 mr-auto p-2" onclick="deleteVideo('${id}')"></i>`;
                 adminList.appendChild(card);
             });
             initScroll();
         });
 
-        function togglePlay(v) { v.paused ? v.play() : v.pause(); }
-        function toggleLikeWithAd(id) { triggerAd(); db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1); }
-        function toggleChatWithAd() { triggerAd(); toggleChat(); }
-        function shareWithAd() { triggerAd(); if(navigator.share) navigator.share({title: 'Crystal Admin', url: window.location.href}); }
-
-        // وظائف الأدمن
-        function checkAdminAuth() {
-            const pass = prompt("ENTER ACCESS KEY:");
-            if (pass === ADMIN_PASS) toggleAdmin();
-            else if (pass !== null) alert("ACCESS DENIED");
-        }
-
-        function toggleAdmin() {
-            const a = document.getElementById('admin-overlay');
-            a.style.display = (a.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function deleteVideo(id) {
-            if(confirm("PERMANENTLY DELETE THIS VIDEO?")) {
-                db.ref(`videos/${id}`).remove();
-            }
-        }
-
-        // إعدادات الرفع
-        const myWidget = cloudinary.createUploadWidget({ 
-            cloudName: "dpcysggzh", 
-            uploadPreset: "poro_go"
-        }, (err, res) => {
-            if (!err && res.event === "success") {
-                db.ref('videos/').push({ url: res.info.secure_url, timestamp: Date.now(), likes: 0 });
-            }
-        });
-        document.getElementById("upload-trigger").onclick = () => { myWidget.open(); };
-
-        function toggleChat() { 
-            const c = document.getElementById('chat-overlay');
-            c.classList.toggle('hidden'); c.classList.toggle('flex');
-        }
-
-        function sendChat() { 
-            const i = document.getElementById('msg-input');
-            if(i.value.trim()){ 
-                db.ref('global_chat').push({user:SHADOW_ID, text:i.value});
-                i.value=''; 
-            } 
-        }
-
-        function handleKey(e) { if(e.key==='Enter') sendChat(); }
-
-        db.ref('global_chat').limitToLast(20).on('value', s => {
-            const b = document.getElementById('chat-box'); b.innerHTML = '';
-            const v = s.val(); 
-            if(v) Object.values(v).forEach(m => {
-                const d = document.createElement('div');
-                d.className = "bg-white/5 border border-white/10 p-4 rounded-2xl max-w-[85%]";
-                d.innerHTML = `<span class="text-[8px] font-[Orbitron] opacity-30 block mb-1">${m.user}</span><p class="text-sm">${m.text}</p>`;
-                b.appendChild(d);
-            });
-            b.scrollTop = b.scrollHeight;
-        });
-
+        // 4. الوضع الليلي المتكيف (تغيير الألوان عند التمرير)
         function initScroll() {
+            const colors = ['#00f3ff', '#ff0055', '#00ffaa', '#ffaa00', '#7000ff', '#ffffff'];
             const obs = new IntersectionObserver((entries) => {
                 entries.forEach(e => {
                     const v = e.target.querySelector('video');
-                    if(e.isIntersecting) v.play().catch(()=>{});
-                    else { v.pause(); v.currentTime = 0; }
+                    if(e.isIntersecting) {
+                        v.play().catch(()=>{});
+                        // لمسة سحرية: تغيير لون النظام بناءً على الفيديو
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        document.documentElement.style.setProperty('--neon', randomColor);
+                    } else { 
+                        v.pause(); v.currentTime = 0; 
+                    }
                 });
             }, { threshold: 0.8 });
             document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
         }
 
-        document.addEventListener('touchstart', () => { 
-            document.querySelectorAll('video').forEach(v => v.muted = false); 
-        }, { once: true });
+        function togglePlay(v) { v.paused ? v.play() : v.pause(); }
+        function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % AD_LINKS.length; }
+        function toggleLikeWithAd(id) { triggerAd(); db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1); }
+        function checkAdminAuth() { if(prompt("ACCESS KEY:") === ADMIN_PASS) toggleAdmin(); }
+        function toggleAdmin() { const a = document.getElementById('admin-overlay'); a.style.display = a.style.display === 'flex' ? 'none' : 'flex'; }
+        function deleteVideo(id) { if(confirm("DELETE?")) db.ref(`videos/${id}`).remove(); }
+
+        const myWidget = cloudinary.createUploadWidget({ cloudName: "dpcysggzh", uploadPreset: "poro_go" }, (err, res) => {
+            if (!err && res.event === "success") db.ref('videos/').push({ url: res.info.secure_url, timestamp: Date.now(), likes: 0 });
+        });
+        document.getElementById("upload-trigger").onclick = () => myWidget.open();
+
+        document.addEventListener('touchstart', () => { document.querySelectorAll('video').forEach(v => v.muted = false); }, { once: true });
     </script>
 </body>
 </html>
