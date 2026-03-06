@@ -23,14 +23,10 @@
         .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
         
-        /* فيديوهات بدون حواف (Full Screen) */
         .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; overflow: hidden; }
-
         .crystal-frame { width: 100%; height: 100%; position: relative; background: #000; }
-
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* علامة مائية تتغير ألوانها أيونياً */
         .watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
             font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 900;
@@ -54,11 +50,21 @@
         .video-meta { position: absolute; bottom: 40px; right: 25px; z-index: 50; }
         .hashtag { font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--neon); background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 50px; border: 1px solid var(--neon); transition: 0.8s; }
 
+        /* شريط سفلي أيوني متغير الألوان */
         nav { 
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
             width: 88%; max-width: 400px; height: 70px; border-radius: 30px; 
-            background: rgba(20,0,10,0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,0,127,0.2);
+            background: rgba(10,0,5,0.8); backdrop-filter: blur(20px); 
+            border: 1px solid var(--neon);
+            box-shadow: 0 0 20px -5px var(--neon);
             display: flex; justify-content: space-around; align-items: center; z-index: 200; 
+            transition: border 0.8s, box-shadow 0.8s;
+        }
+
+        #upload-trigger { 
+            background: var(--neon); 
+            box-shadow: 0 0 25px var(--neon); 
+            transition: 0.8s; 
         }
 
         #chat-overlay { position: fixed; inset: 0; z-index: 600; background: rgba(10,0,5,0.98); display: none; flex-direction: column; padding: 30px; }
@@ -76,23 +82,23 @@
 
     <main class="scroll-engine" id="video-stack"></main>
 
-    <nav>
+    <nav id="main-nav">
         <i class="fas fa-shapes text-white/20"></i>
-        <div id="upload-trigger" class="w-14 h-14 bg-[#ff007f] text-white rounded-[22px] flex items-center justify-center shadow-[0_0_25px_rgba(255,0,127,0.6)] active:scale-90 transition-transform cursor-pointer">
+        <div id="upload-trigger" class="w-14 h-14 text-white rounded-[22px] flex items-center justify-center active:scale-90 transition-transform cursor-pointer">
             <i class="fas fa-plus text-lg"></i>
         </div>
-        <i class="fas fa-comment-alt text-[#ff007f] text-xl cursor-pointer" onclick="toggleChat()"></i>
+        <i id="chat-icon" class="fas fa-comment-alt text-xl cursor-pointer transition-colors duration-700" style="color: var(--neon);" onclick="toggleChat()"></i>
     </nav>
 
     <div id="chat-overlay">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="font-[Orbitron] text-[#ff007f] tracking-widest">IONIC_CHAT</h2>
+            <h2 class="font-[Orbitron] text-pink-500 tracking-widest">IONIC_CHAT</h2>
             <i class="fas fa-times text-white/50 text-xl p-2" onclick="toggleChat()"></i>
         </div>
         <div id="chat-box" class="flex-1 overflow-y-auto"></div>
         <div class="mt-4 flex gap-3 p-2 bg-white/5 rounded-2xl border border-pink-500/20">
             <input type="text" id="msg-input" class="bg-transparent flex-1 outline-none px-4 py-2" placeholder="Write pulse...">
-            <button onclick="sendMsg()" class="bg-[#ff007f] text-white px-6 rounded-xl">SEND</button>
+            <button onclick="sendMsg()" class="bg-pink-600 text-white px-6 rounded-xl">SEND</button>
         </div>
     </div>
 
@@ -115,8 +121,7 @@
         const db = firebase.database();
 
         function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB');
         }
         setInterval(updateClock, 1000);
 
@@ -181,6 +186,7 @@
 
         const myWidget = cloudinary.createUploadWidget({ 
             cloudName: "dpcysggzh", uploadPreset: "poro_go",
+            maxFiles: 1, clientAllowedFormats: ["mp4", "mov", "webm"],
             styles: { palette: { window: "#0d0005", sourceBg: "#0d0005", windowBorder: "#ff007f", tabIcon: "#ff007f", inactiveTabIcon: "#550022", menuIcons: "#ff007f", link: "#ff007f", action: "#ff007f", inProgress: "#ff007f", complete: "#20ff88", error: "#ff2222", textDark: "#000000", textLight: "#ffffff" } }
         }, (err, res) => {
             if (!err && res.event === "success") db.ref('videos/').push({ url: res.info.secure_url, likes: 0, timestamp: Date.now() });
