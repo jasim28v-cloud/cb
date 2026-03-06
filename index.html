@@ -16,12 +16,12 @@
         .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
         .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; padding: 12px; box-sizing: border-box; }
-        .crystal-container { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #000; shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .crystal-container { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
         .glass-ui { background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); }
         .side-actions { position: absolute; left: 20px; bottom: 110px; display: flex; flex-direction: column; gap: 18px; z-index: 100; }
         .action-btn { width: 52px; height: 52px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; }
-        .video-info { position: absolute; bottom: 30px; right: 25px; text-align: right; z-index: 40; max-width: 70%; }
+        .video-info { position: absolute; bottom: 30px; right: 25px; text-align: right; z-index: 40; max-width: 70%; pointer-events: none; }
         header { position: fixed; top: 25px; left: 25px; right: 25px; z-index: 200; height: 55px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; height: 65px; border-radius: 25px; display: flex; justify-content: space-around; align-items: center; z-index: 200; }
     </style>
@@ -36,22 +36,22 @@
     <main class="scroll-engine" id="video-stack">
         <div class="h-full flex items-center justify-center flex-col gap-4">
             <div class="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-            <span class="text-[10px] font-[Orbitron] tracking-widest opacity-40">LOADING_SYSTEM...</span>
+            <span class="text-[10px] font-[Orbitron] tracking-widest opacity-40">SYNCHRONIZING...</span>
         </div>
     </main>
 
     <nav class="glass-ui">
         <i class="fas fa-home opacity-100 text-lg"></i>
-        <div id="upload-trigger" class="w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
+        <div id="upload-trigger" class="w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer">
             <i class="fas fa-plus"></i>
         </div>
-        <i class="fas fa-comment-dots opacity-40 text-lg" onclick="toggleChatWithAd()"></i>
+        <i class="fas fa-comment-dots opacity-40 text-lg cursor-pointer" onclick="toggleChatWithAd()"></i>
     </nav>
 
     <div id="chat-overlay" class="fixed inset-0 z-[300] hidden flex-col bg-black/80 backdrop-blur-2xl p-6">
         <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
             <span class="font-[Orbitron] text-xs tracking-tighter">COMMS_CHANNEL</span>
-            <i class="fas fa-times opacity-50 p-2" onclick="toggleChat()"></i>
+            <i class="fas fa-times opacity-50 p-2 cursor-pointer" onclick="toggleChat()"></i>
         </div>
         <div id="chat-box" class="flex-1 overflow-y-auto space-y-4"></div>
         <div class="mt-4 flex gap-2 glass-ui p-2 rounded-2xl">
@@ -92,7 +92,6 @@
                         <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
                         <div class="video-info">
                             <div class="text-[10px] font-bold opacity-30 font-[Orbitron]">ID: ${id.substr(-6)}</div>
-                            <div class="text-sm font-light mt-1">المحتوى مشفر من قبل النظام</div>
                         </div>
                         <div class="side-actions">
                             <div class="action-btn glass-ui" onclick="toggleLikeWithAd('${id}')">
@@ -116,26 +115,17 @@
         });
 
         function togglePlay(v) { v.paused ? v.play() : v.pause(); }
-
-        function toggleLikeWithAd(id) {
-            triggerAd();
-            db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1);
-        }
-
-        function toggleChatWithAd() {
-            triggerAd();
-            toggleChat();
-        }
-
-        function shareWithAd() {
-            triggerAd();
-            if(navigator.share) navigator.share({title: 'Crystal Genesis', url: window.location.href});
-        }
+        function toggleLikeWithAd(id) { triggerAd(); db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1); }
+        function toggleChatWithAd() { triggerAd(); toggleChat(); }
+        function shareWithAd() { triggerAd(); if(navigator.share) navigator.share({title: 'Crystal Genesis', url: window.location.href}); }
 
         const myWidget = cloudinary.createUploadWidget({ 
             cloudName: "dpcysggzh", 
-            uploadPreset: "poro_go"
+            uploadPreset: "poro_go",
+            clientAllowedFormats: ["mp4", "mov", "webm"],
+            resourceType: "video"
         }, (err, res) => {
+            if (err) console.error(err);
             if (!err && res.event === "success") {
                 db.ref('videos/').push({ url: res.info.secure_url, timestamp: Date.now(), likes: 0 });
             }
