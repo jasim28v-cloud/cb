@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>VØID_X | INFINITY IONIC V2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
@@ -21,16 +19,14 @@
             --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
+        /* تعديل جوهري: السماح بالفيو بورت بالتمدد */
         body, html { 
             margin: 0; padding: 0; height: 100%; 
             background: var(--bg); color: #fff; 
             overflow: hidden; font-family: 'Cairo', sans-serif; 
             user-select: none; -webkit-tap-highlight-color: transparent;
-            /* منع الارتداد لضمان ثبات العرض الكامل */
-            position: fixed; width: 100%;
         }
 
-        /* خلفية النيون المتحركة */
         .pink-void-bg {
             position: fixed; inset: 0; z-index: -1;
             background: radial-gradient(circle at 50% 50%, #1a000d 0%, #000 100%);
@@ -43,16 +39,25 @@
 
         @keyframes drift { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.5) rotate(15deg); } }
 
+        /* تعديل محرك التمرير ليدعم إخفاء الشريط */
         .scroll-engine { 
             height: 100vh; 
-            width: 100vw;
             overflow-y: scroll; 
             scroll-snap-type: y mandatory; 
             scrollbar-width: none; 
+            -webkit-overflow-scrolling: touch;
         }
         .scroll-engine::-webkit-scrollbar { display: none; }
         
-        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; overflow: hidden; }
+        /* جعل الفيديو يملأ المساحة المتاحة ديناميكياً */
+        .video-segment { 
+            height: 100vh; 
+            height: -webkit-fill-available; 
+            width: 100vw; 
+            scroll-snap-align: start; 
+            position: relative; 
+            overflow: hidden; 
+        }
         .crystal-frame { width: 100%; height: 100%; position: relative; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); transition: var(--transition); }
 
@@ -63,14 +68,13 @@
             z-index: 10; text-transform: uppercase;
         }
 
-        /* تعديل الهيدر ليحترم مساحة النوتش الآمنة */
+        /* تعديل الهيدر ليتناسب مع المساحة الآمنة (env safe area) */
         header { 
             position: fixed; 
             top: calc(env(safe-area-inset-top) + 20px); 
             width: 100%; padding: 0 20px; z-index: 500; 
             display: flex; justify-content: space-between; align-items: center; 
         }
-
         .brand-box { 
             padding: 10px 25px; border-radius: 20px; 
             background: rgba(0,0,0,0.4); backdrop-filter: blur(15px);
@@ -85,13 +89,12 @@
             border: 1px solid rgba(255,255,255,0.05); text-shadow: 0 0 10px var(--neon);
         }
 
-        /* الأزرار الجانبية تحترم المساحة السفلية الآمنة */
+        /* تعديل الأزرار الجانبية لتناسب التمرير الذكي */
         .side-actions { 
             position: absolute; left: 20px; 
             bottom: calc(env(safe-area-inset-bottom) + 120px); 
             display: flex; flex-direction: column; gap: 18px; z-index: 100; 
         }
-
         .action-btn { 
             width: 58px; height: 58px; border-radius: 50%; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; transition: var(--transition); 
@@ -103,20 +106,17 @@
         .action-btn:active { transform: scale(0.85); background: var(--neon); }
         .action-btn.active-neon { color: var(--neon); border-color: var(--neon); box-shadow: 0 0 20px var(--neon); }
 
-        /* الميتا تحترم المساحة السفلية */
         .video-meta { 
             position: absolute; 
             bottom: calc(env(safe-area-inset-bottom) + 110px); 
             right: 25px; z-index: 50; text-align: right; 
         }
-
         .hashtag { 
             font-family: 'Orbitron', sans-serif; font-size: 12px; color: #fff; 
             background: linear-gradient(90deg, var(--neon), transparent); 
             padding: 6px 20px; border-radius: 5px; font-weight: bold;
         }
 
-        /* الناف بار يحترم المساحة السفلية */
         nav { 
             position: fixed; 
             bottom: calc(env(safe-area-inset-bottom) + 25px); 
@@ -140,8 +140,7 @@
         #chat-overlay { 
             position: fixed; inset: 0; z-index: 600; 
             background: rgba(5,0,2,0.95); backdrop-filter: blur(20px);
-            display: none; flex-direction: column; 
-            padding: calc(env(safe-area-inset-top) + 30px) 30px calc(env(safe-area-inset-bottom) + 30px) 30px; 
+            display: none; flex-direction: column; padding: 30px; 
             animation: slideUp 0.5s ease;
         }
 
@@ -158,7 +157,9 @@
         .admin-panel { position: fixed; inset: 0; z-index: 999; background: #000; display: none; flex-direction: column; padding: 40px 20px; }
     </style>
 </head>
-<body onclick="enableFullScreen()"> <div class="pink-void-bg"></div>
+<body>
+
+    <div class="pink-void-bg"></div>
 
     <header>
         <div class="brand-box">
@@ -167,7 +168,7 @@
         <div class="ionic-clock" id="clock">00:00:00</div>
     </header>
 
-    <main class="scroll-engine" id="video-stack"></main>
+    <main class="scroll-engine" id="video-stack" onscroll="handleSmartScroll()"></main>
 
     <nav id="main-nav">
         <i class="fas fa-home text-white/40 text-xl hover:text-white transition-colors"></i>
@@ -205,15 +206,18 @@
     </div>
 
     <script>
-        // وظيفة إخفاء شريط المتصفح الحقيقية
-        function enableFullScreen() {
-            const doc = window.document;
-            const docEl = doc.documentElement;
-            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-            if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-                requestFullScreen.call(docEl).catch(err => {});
+        // وظيفة التمرير الذكي لإخفاء شريط العنوان فقط
+        function handleSmartScroll() {
+            // هذه الخدعة تجعل المتصفح يظن أن الصفحة تتمدد فيخفي شريط العنوان
+            if (window.scrollY === 0) {
+                window.scrollTo(0, 1);
             }
         }
+
+        // محاولة إخفاء الشريط عند التحميل مباشرة
+        window.addEventListener("load", () => {
+            setTimeout(() => window.scrollTo(0, 1), 100);
+        });
 
         const ADMIN_PASS = "1234";
         const AD_LINKS = ["https://data527.click/21330bf1d025d41336e6/57154ac610/?placementName=default"];
