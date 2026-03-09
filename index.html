@@ -3,126 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VØID_X | INFINITY IONIC V2</title>
+    <title>VØID_X | ULTRA GLASS PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&family=Syncopate:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&display=swap');
         
-        :root { 
-            --neon: #ff007f; 
-            --bg: #050002; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
+        :root { --neon: #ff007f; --bg: #050002; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; user-select: none; }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            background: var(--bg); color: #fff; 
-            overflow: hidden; font-family: 'Cairo', sans-serif; 
-            user-select: none; -webkit-tap-highlight-color: transparent;
+        .pink-void-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, #1a000d 0%, #000 100%); }
+        
+        /* تحسين سلاسة التمرير */
+        .scroll-engine { 
+            height: 100vh; 
+            overflow-y: scroll; 
+            scroll-snap-type: y mandatory; 
+            scrollbar-width: none; 
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
-
-        /* خلفية النيون المتحركة */
-        .pink-void-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a000d 0%, #000 100%);
-        }
-        .pink-void-bg::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(45deg, transparent 45%, var(--neon) 50%, transparent 55%);
-            filter: blur(150px); opacity: 0.15; animation: drift 10s infinite alternate;
-        }
-
-        @keyframes drift { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.5) rotate(15deg); } }
-
-        .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
         
-        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; overflow: hidden; }
+        .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; scroll-snap-stop: always; position: relative; overflow: hidden; }
         .crystal-frame { width: 100%; height: 100%; position: relative; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); transition: var(--transition); }
+        video { width: 100%; height: 100%; object-fit: cover; }
 
-        .watermark {
-            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
-            font-family: 'Syncopate', sans-serif; font-size: 5rem; font-weight: 900;
-            color: var(--neon); opacity: 0.05; pointer-events: none; white-space: nowrap;
-            z-index: 10; text-transform: uppercase;
-        }
+        header { position: fixed; top: 25px; left: 20px; right: 20px; z-index: 500; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .brand-box { padding: 8px 22px; border-radius: 20px; border-left: 4px solid var(--neon); background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); pointer-events: auto; transition: 0.5s ease; }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 0 15px var(--neon); }
 
-        header { position: fixed; top: 20px; width: 100%; padding: 0 20px; z-index: 500; display: flex; justify-content: space-between; align-items: center; }
-        .brand-box { 
-            padding: 10px 25px; border-radius: 20px; 
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            border-left: 4px solid var(--neon);
-        }
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 16px; letter-spacing: 4px; color: #fff; }
-        .ionic-clock { 
-            font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon); 
-            background: var(--glass); padding: 10px 20px; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); text-shadow: 0 0 10px var(--neon);
-        }
+        .v-watermark { position: absolute; top: 20%; right: 10%; font-family: 'Orbitron'; font-size: 0.8rem; color: rgba(255,255,255,0.15); z-index: 20; letter-spacing: 4px; animation: floatMark 10s infinite; text-shadow: 0 0 5px var(--neon); }
+        @keyframes floatMark { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-20px, 40px); } }
 
-        .side-actions { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 18px; z-index: 100; }
-        .action-btn { 
-            width: 58px; height: 58px; border-radius: 50%; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; transition: var(--transition); 
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); 
-            border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .action-btn i { font-size: 20px; transition: 0.3s; }
-        .action-btn:active { transform: scale(0.85); background: var(--neon); }
-        .action-btn.active-neon { color: var(--neon); border-color: var(--neon); box-shadow: 0 0 20px var(--neon); }
+        /* الأزرار الجانبية */
+        .side-actions { position: absolute; left: 20px; bottom: 180px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
+        .action-btn { width: 55px; height: 55px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .action-btn i { font-size: 1.3rem; color: var(--neon); filter: drop-shadow(0 0 8px var(--neon)); transition: 0.3s; }
+        .btn-label { font-size: 9px; font-weight: bold; margin-top: 2px; color: #fff; opacity: 0.7; font-family: 'Orbitron'; }
+        .action-btn:active { transform: scale(0.85); }
 
-        .video-meta { position: absolute; bottom: 110px; right: 25px; z-index: 50; text-align: right; }
-        .hashtag { 
-            font-family: 'Orbitron', sans-serif; font-size: 12px; color: #fff; 
-            background: linear-gradient(90deg, var(--neon), transparent); 
-            padding: 6px 20px; border-radius: 5px; font-weight: bold;
-        }
+        nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 75px; border-radius: 35px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .finger-admin { color: var(--neon); cursor: pointer; filter: drop-shadow(0 0 10px var(--neon)); transition: 0.5s; }
 
-        nav { 
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
-            width: 90%; max-width: 450px; height: 75px; border-radius: 25px; 
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(30px); 
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 200; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-            transition: var(--transition);
-        }
+        #upload-trigger { background: var(--neon); box-shadow: 0 0 25px var(--neon); cursor: pointer; width: 62px; height: 62px; border-radius: 22px; display: flex; align-items: center; justify-content: center; transform: translateY(-15px); border: 4px solid var(--bg); }
 
-        #upload-trigger { 
-            width: 60px; height: 60px; background: var(--neon); 
-            border-radius: 20px; transform: translateY(-20px);
-            box-shadow: 0 10px 30px var(--neon); 
-            display: flex; align-items: center; justify-content: center;
-            border: 4px solid var(--bg);
-        }
-
-        #chat-overlay { 
-            position: fixed; inset: 0; z-index: 600; 
-            background: rgba(5,0,2,0.95); backdrop-filter: blur(20px);
-            display: none; flex-direction: column; padding: 30px; 
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .chat-msg {
-            background: var(--glass); padding: 15px; border-radius: 20px; 
-            margin-bottom: 12px; border-right: 3px solid var(--neon);
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-        .admin-panel { position: fixed; inset: 0; z-index: 999; background: #000; display: none; flex-direction: column; padding: 40px 20px; }
+        #admin-panel, #chat-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(5,0,2,0.95); display: none; flex-direction: column; padding: 40px 25px; backdrop-filter: blur(30px); }
+        .video-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        #clock { transition: 0.5s; border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); }
     </style>
 </head>
 <body>
@@ -130,70 +62,60 @@
     <div class="pink-void-bg"></div>
 
     <header>
-        <div class="brand-box">
-            <span class="brand-name">VØID_X</span>
-        </div>
-        <div class="ionic-clock" id="clock">00:00:00</div>
+        <div class="brand-box"><span class="brand-name">VØID_X</span></div>
+        <div class="text-[11px] font-[Orbitron] text-white/80 px-4 py-2 rounded-full border" id="clock">00:00:00</div>
     </header>
 
     <main class="scroll-engine" id="video-stack"></main>
 
     <nav id="main-nav">
-        <i class="fas fa-home text-white/40 text-xl hover:text-white transition-colors"></i>
-        <div id="upload-trigger" class="active:scale-90 transition-transform cursor-pointer">
-            <i class="fas fa-plus text-white text-2xl"></i>
-        </div>
-        <i id="chat-icon" class="fas fa-comment-dots text-white/40 text-2xl cursor-pointer" onclick="toggleChat()"></i>
+        <div class="finger-admin" onclick="openAdmin()"><i class="fas fa-fingerprint text-3xl"></i></div>
+        <div id="upload-trigger"><i class="fas fa-plus text-2xl text-white"></i></div>
+        <div onclick="toggleChat()" style="color: rgba(255,255,255,0.3);"><i class="fas fa-comment-dots text-2xl"></i></div>
     </nav>
 
-    <div id="chat-overlay">
+    <div id="admin-panel">
         <div class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="font-[Orbitron] text-2xl font-black tracking-tighter" style="color: var(--neon)">IONIC_PULSE</h2>
-                <p class="text-[10px] text-white/40">GLOBAL_ENCRYPTED_CHANNEL</p>
-            </div>
-            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center" onclick="toggleChat()">
-                <i class="fas fa-times text-white"></i>
-            </div>
+            <h2 class="font-[Orbitron] text-xl text-pink-500">ADMIN_PANEL</h2>
+            <i class="fas fa-xmark text-3xl" onclick="closeAdmin()"></i>
         </div>
-        <div id="chat-box" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
-        <div class="mt-6 flex gap-3 p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-xl">
-            <input type="text" id="msg-input" class="bg-transparent flex-1 outline-none px-4 py-2 text-white placeholder:text-white/20" placeholder="Type a message...">
-            <button onclick="sendMsg()" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all" style="background: var(--neon)">
-                <i class="fas fa-paper-plane text-white"></i>
-            </button>
-        </div>
+        <div id="admin-list" class="flex-1 overflow-y-auto"></div>
     </div>
 
-    <div id="admin-overlay" class="admin-panel">
-        <div class="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
-            <h2 class="font-[Orbitron] text-[#ffaa00] text-xl">SYSTEM_ROOT</h2>
-            <button onclick="toggleAdmin()" class="bg-red-500/20 text-red-500 px-6 py-2 rounded-full font-bold">EXIT</button>
+    <div id="chat-overlay">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="font-[Orbitron] text-pink-500 text-2xl">VØID_CHAT</h2>
+            <i class="fas fa-chevron-down text-3xl" onclick="toggleChat()"></i>
         </div>
-        <div id="admin-list" class="space-y-4 overflow-y-auto"></div>
+        <div id="chat-box" class="flex-1 overflow-y-auto space-y-4"></div>
+        <div class="mt-4 flex gap-3">
+            <input type="text" id="msg-input" class="bg-white/5 flex-1 rounded-2xl p-4 outline-none border border-white/10" placeholder="Type here...">
+            <button onclick="sendMsg()" class="bg-pink-600 px-6 rounded-2xl"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
 
     <script>
-        const ADMIN_PASS = "1234";
-        const AD_LINKS = ["https://data527.click/21330bf1d025d41336e6/57154ac610/?placementName=default"];
+        const ADMIN_CODE = "1234";
+        const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
         let currentAd = 0;
+        let isMuted = true;
         const USR_ID = "ION-" + Math.floor(Math.random()*999);
 
-        // Firebase Setup
         const firebaseConfig = { databaseURL: "https://goms-8fdfd-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Clock Engine
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + 
-                                                        now.getMinutes().toString().padStart(2, '0') + ":" + 
-                                                        now.getSeconds().toString().padStart(2, '0');
-        }
-        setInterval(updateClock, 1000);
+        function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % AD_LINKS.length; }
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
 
-        // Main Data Stream
+        function toggleMute() {
+            isMuted = !isMuted;
+            const videos = document.querySelectorAll('video');
+            videos.forEach(v => v.muted = isMuted);
+            const icons = document.querySelectorAll('.mute-icon');
+            icons.forEach(i => i.className = isMuted ? 'fas fa-volume-xmark mute-icon' : 'fas fa-volume-high mute-icon');
+        }
+
         db.ref('videos').on('value', (snap) => {
             const container = document.getElementById('video-stack');
             const adminList = document.getElementById('admin-list');
@@ -207,111 +129,89 @@
                 section.className = 'video-segment';
                 section.innerHTML = `
                     <div class="crystal-frame">
-                        <div class="watermark">VØID_X PRO</div>
-                        <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
-                        <div class="video-meta">
-                            <div class="mb-2 text-white/60 text-[10px] font-[Orbitron]">ID: ${id.substring(1,8)}</div>
-                            <span class="hashtag">#INFINIY_IONIC_V2</span>
-                        </div>
+                        <div class="v-watermark">VØID_X SUPREME</div>
+                        <video loop playsinline muted src="${vid.url}" onclick="this.paused ? this.play() : this.pause()"></video>
                         <div class="side-actions">
-                            <div class="action-btn" onclick="checkAdmin()" style="border-color: #ffaa00; color: #ffaa00">
-                                <i class="fas fa-shield-halved"></i>
+                            <div class="action-btn" onclick="toggleMute()">
+                                <i class="${isMuted ? 'fas fa-volume-xmark' : 'fas fa-volume-high'} mute-icon"></i>
+                                <span class="btn-label">AUDIO</span>
                             </div>
-                            <div class="action-btn active-neon" onclick="triggerAd(); db.ref('videos/${id}/likes').transaction(l=>(l||0)+1)">
-                                <i class="fas fa-heart"></i>
-                                <span class="text-[10px] mt-1 font-bold">${vid.likes || 0}</span>
+                            <div class="action-btn" onclick="likeVideo('${id}')">
+                                <i class="fas fa-bolt"></i>
+                                <span class="btn-label">${vid.likes || 0}</span>
                             </div>
-                            <div class="action-btn" onclick="toggleChat()"><i class="fas fa-comment"></i></div>
-                            <div class="action-btn" onclick="triggerAd(); shareVideo()"><i class="fas fa-paper-plane"></i></div>
+                            <div class="action-btn" onclick="toggleChat()">
+                                <i class="fas fa-terminal"></i>
+                                <span class="btn-label">CHAT</span>
+                            </div>
+                            <div class="action-btn" onclick="shareVideo()">
+                                <i class="fas fa-share-nodes"></i>
+                                <span class="btn-label">SEND</span>
+                            </div>
                         </div>
                     </div>
                 `;
                 container.appendChild(section);
 
                 adminList.innerHTML += `
-                    <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <div class="video-item border-l-4 border-pink-600">
                         <video class="w-16 h-16 rounded-lg object-cover" src="${vid.url}"></video>
-                        <div class="flex-1">
-                            <div class="text-[10px] text-white/30 mb-1">NODE_ID: ${id}</div>
-                            <div class="text-xs text-green-500">STATUS: ACTIVE</div>
-                        </div>
-                        <i class="fas fa-trash-alt text-red-500 bg-red-500/10 p-4 rounded-xl" onclick="deleteVideo('${id}')"></i>
-                    </div>`;
+                        <span class="text-[10px] opacity-50 font-mono">${id.substring(0,8)}</span>
+                        <button onclick="deleteVideo('${id}')" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
             });
             initObserver();
         });
 
-        // Helper Functions
-        function togglePlay(v) { v.paused ? v.play() : v.pause(); }
-        function triggerAd() { window.open(AD_LINKS[0], '_blank'); }
-        function toggleChat() { 
-            const c = document.getElementById('chat-overlay'); 
-            c.style.display = (c.style.display === 'flex' ? 'none' : 'flex'); 
-        }
-        function checkAdmin() { if(prompt("ENTER MASTER KEY:") === ADMIN_PASS) toggleAdmin(); }
-        function toggleAdmin() { 
-            const a = document.getElementById('admin-overlay'); 
-            a.style.display = (a.style.display === 'flex' ? 'none' : 'flex'); 
-        }
-        function deleteVideo(id) { if(confirm('SURE TO REMOVE?')) db.ref('videos/' + id).remove(); }
-        function shareVideo() { if(navigator.share) navigator.share({title: 'VØID_X', url: window.location.href}); }
-
-        // Messaging Engine
+        function openAdmin() { if(prompt("ADMIN PASS:") === ADMIN_CODE) document.getElementById('admin-panel').style.display = 'flex'; }
+        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+        function deleteVideo(id) { if(confirm("حذف؟")) db.ref(`videos/${id}`).remove(); }
+        function likeVideo(id) { triggerAd(); db.ref(`videos/${id}/likes`).transaction(l => (l || 0) + 1); }
+        function shareVideo() { triggerAd(); if(navigator.share) navigator.share({url: window.location.href}); }
+        function toggleChat() { const c = document.getElementById('chat-overlay'); c.style.display = c.style.display==='flex'?'none':'flex'; }
+        
         function sendMsg() {
             const inp = document.getElementById('msg-input');
-            if(inp.value.trim()){ 
-                db.ref('chat').push({user:USR_ID, text:inp.value, time: Date.now()}); 
-                inp.value = ''; 
-            }
+            if(inp.value.trim()){ db.ref('chat').push({user:USR_ID, text:inp.value}); inp.value=''; }
         }
 
         db.ref('chat').limitToLast(15).on('value', s => {
             const box = document.getElementById('chat-box'); box.innerHTML = '';
             s.forEach(m => {
                 const d = m.val();
-                const isMe = d.user === USR_ID;
-                box.innerHTML += `
-                    <div class="chat-msg" style="${isMe ? 'border-right: 3px solid #fff;' : ''}">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[9px] font-[Orbitron]" style="color: var(--neon)">${d.user}</span>
-                        </div>
-                        <p class="text-sm text-white/80">${d.text}</p>
-                    </div>`;
+                box.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl border-l-2 border-pink-500/30">
+                    <span class="text-[10px] text-pink-500 font-bold block mb-1 uppercase">${d.user}</span>
+                    <p class="text-sm text-white/80">${d.text}</p>
+                </div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
 
-        // Cloudinary Widget
         const myWidget = cloudinary.createUploadWidget({ 
             cloudName: "dpcysggzh", uploadPreset: "poro_go",
-            styles: { palette: { window: "#050002", sourceBg: "#050002", windowBorder: "#ff007f", tabIcon: "#ff007f", textLight: "#ffffff" } }
+            maxFiles: 1, clientAllowedFormats: ["mp4", "mov", "webm"],
+            styles: { palette: { window: "#050002", sourceBg: "#050002", windowBorder: "#ff007f", tabIcon: "#ff007f", menuIcons: "#ff007f", link: "#ff007f", action: "#ff007f", inProgress: "#ff007f", complete: "#20ff88", textLight: "#ffffff" } }
         }, (err, res) => {
             if (!err && res.event === "success") db.ref('videos/').push({ url: res.info.secure_url, likes: 0, timestamp: Date.now() });
         });
         document.getElementById("upload-trigger").onclick = () => myWidget.open();
 
-        // Intersection Observer for AutoPlay & Color Magic
         function initObserver() {
-            const colors = ['#ff007f', '#00f3ff', '#ffaa00', '#9d00ff', '#00ffaa'];
+            const colors = ['#ff007f', '#00f3ff', '#00ffaa', '#ffaa00', '#bd00ff'];
             const obs = new IntersectionObserver((es) => {
                 es.forEach(e => {
                     const v = e.target.querySelector('video');
-                    if(e.isIntersecting) {
+                    if(e.isIntersecting) { 
+                        v.muted = isMuted;
                         v.play().catch(()=>{});
-                        // Smooth Color Change
-                        const newColor = colors[Math.floor(Math.random()*colors.length)];
-                        document.documentElement.style.setProperty('--neon', newColor);
-                        document.getElementById('main-nav').style.boxShadow = `0 0 30px -10px ${newColor}`;
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        document.documentElement.style.setProperty('--neon', randomColor);
                     } else { v.pause(); v.currentTime = 0; }
                 });
-            }, { threshold: 0.7 });
+            }, { threshold: 0.6 });
             document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
         }
-
-        // Unmute on first touch
-        document.addEventListener('touchstart', () => { 
-            document.querySelectorAll('video').forEach(v => v.muted = false); 
-        }, { once: true });
     </script>
 </body>
 </html>
