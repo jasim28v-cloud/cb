@@ -3,71 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VØID_X | INFINITY IONIC</title>
+    <title>VØID_X | INFINITY IONIC V2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Cairo:wght@400;700&family=Syncopate:wght@700&display=swap');
         
-        :root { --neon: #ff007f; --bg: #0d0005; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; overflow: hidden; font-family: 'Cairo', sans-serif; user-select: none; }
+        :root { 
+            --neon: #ff007f; 
+            --bg: #050002; 
+            --glass: rgba(255, 255, 255, 0.03);
+            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background: var(--bg); color: #fff; 
+            overflow: hidden; font-family: 'Cairo', sans-serif; 
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        /* خلفية النيون المتحركة */
         .pink-void-bg {
             position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #200010 0%, #000 100%);
+            background: radial-gradient(circle at 50% 50%, #1a000d 0%, #000 100%);
         }
+        .pink-void-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(45deg, transparent 45%, var(--neon) 50%, transparent 55%);
+            filter: blur(150px); opacity: 0.15; animation: drift 10s infinite alternate;
+        }
+
+        @keyframes drift { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.5) rotate(15deg); } }
 
         .scroll-engine { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .scroll-engine::-webkit-scrollbar { display: none; }
         
         .video-segment { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; overflow: hidden; }
         .crystal-frame { width: 100%; height: 100%; position: relative; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); transition: var(--transition); }
 
         .watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
-            font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 900;
-            color: var(--neon); opacity: 0.08; pointer-events: none; white-space: nowrap;
-            transition: color 1s ease; z-index: 10;
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            font-family: 'Syncopate', sans-serif; font-size: 5rem; font-weight: 900;
+            color: var(--neon); opacity: 0.05; pointer-events: none; white-space: nowrap;
+            z-index: 10; text-transform: uppercase;
         }
 
-        header { position: fixed; top: 25px; right: 25px; z-index: 500; display: flex; align-items: center; gap: 12px; }
-        .brand-box { padding: 8px 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 15px var(--neon); background: rgba(0,0,0,0.8); transition: 0.8s; }
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px var(--neon); }
-        .ionic-clock { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--neon); background: rgba(255,0,127,0.1); padding: 8px 15px; border-radius: 15px; border: 1px solid rgba(255,0,127,0.2); transition: 0.8s; }
+        header { position: fixed; top: 20px; width: 100%; padding: 0 20px; z-index: 500; display: flex; justify-content: space-between; align-items: center; }
+        .brand-box { 
+            padding: 10px 25px; border-radius: 20px; 
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            border-left: 4px solid var(--neon);
+        }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 16px; letter-spacing: 4px; color: #fff; }
+        .ionic-clock { 
+            font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon); 
+            background: var(--glass); padding: 10px 20px; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); text-shadow: 0 0 10px var(--neon);
+        }
 
-        .side-actions { position: absolute; left: 22px; bottom: 130px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
+        .side-actions { position: absolute; left: 20px; bottom: 120px; display: flex; flex-direction: column; gap: 18px; z-index: 100; }
         .action-btn { 
-            width: 56px; height: 56px; border-radius: 20px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; transition: 0.3s; 
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: var(--neon);
+            width: 58px; height: 58px; border-radius: 50%; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; transition: var(--transition); 
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .admin-btn { border-color: #ffaa00 !important; color: #ffaa00 !important; }
+        .action-btn i { font-size: 20px; transition: 0.3s; }
+        .action-btn:active { transform: scale(0.85); background: var(--neon); }
+        .action-btn.active-neon { color: var(--neon); border-color: var(--neon); box-shadow: 0 0 20px var(--neon); }
 
-        .video-meta { position: absolute; bottom: 40px; right: 25px; z-index: 50; }
-        .hashtag { font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--neon); background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 50px; border: 1px solid var(--neon); transition: 0.8s; }
+        .video-meta { position: absolute; bottom: 110px; right: 25px; z-index: 50; text-align: right; }
+        .hashtag { 
+            font-family: 'Orbitron', sans-serif; font-size: 12px; color: #fff; 
+            background: linear-gradient(90deg, var(--neon), transparent); 
+            padding: 6px 20px; border-radius: 5px; font-weight: bold;
+        }
 
-        /* شريط سفلي أيوني متغير الألوان */
         nav { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            width: 88%; max-width: 400px; height: 70px; border-radius: 30px; 
-            background: rgba(10,0,5,0.8); backdrop-filter: blur(20px); 
-            border: 1px solid var(--neon);
-            box-shadow: 0 0 20px -5px var(--neon);
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 450px; height: 75px; border-radius: 25px; 
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(30px); 
+            border: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-around; align-items: center; z-index: 200; 
-            transition: border 0.8s, box-shadow 0.8s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            transition: var(--transition);
         }
 
         #upload-trigger { 
-            background: var(--neon); 
-            box-shadow: 0 0 25px var(--neon); 
-            transition: 0.8s; 
+            width: 60px; height: 60px; background: var(--neon); 
+            border-radius: 20px; transform: translateY(-20px);
+            box-shadow: 0 10px 30px var(--neon); 
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid var(--bg);
         }
 
-        #chat-overlay { position: fixed; inset: 0; z-index: 600; background: rgba(10,0,5,0.98); display: none; flex-direction: column; padding: 30px; }
+        #chat-overlay { 
+            position: fixed; inset: 0; z-index: 600; 
+            background: rgba(5,0,2,0.95); backdrop-filter: blur(20px);
+            display: none; flex-direction: column; padding: 30px; 
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .chat-msg {
+            background: var(--glass); padding: 15px; border-radius: 20px; 
+            margin-bottom: 12px; border-right: 3px solid var(--neon);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
         .admin-panel { position: fixed; inset: 0; z-index: 999; background: #000; display: none; flex-direction: column; padding: 40px 20px; }
     </style>
 </head>
@@ -76,55 +130,70 @@
     <div class="pink-void-bg"></div>
 
     <header>
-        <div class="brand-box"><span class="brand-name">VØID_X</span></div>
+        <div class="brand-box">
+            <span class="brand-name">VØID_X</span>
+        </div>
         <div class="ionic-clock" id="clock">00:00:00</div>
     </header>
 
     <main class="scroll-engine" id="video-stack"></main>
 
     <nav id="main-nav">
-        <i class="fas fa-shapes text-white/20"></i>
-        <div id="upload-trigger" class="w-14 h-14 text-white rounded-[22px] flex items-center justify-center active:scale-90 transition-transform cursor-pointer">
-            <i class="fas fa-plus text-lg"></i>
+        <i class="fas fa-home text-white/40 text-xl hover:text-white transition-colors"></i>
+        <div id="upload-trigger" class="active:scale-90 transition-transform cursor-pointer">
+            <i class="fas fa-plus text-white text-2xl"></i>
         </div>
-        <i id="chat-icon" class="fas fa-comment-alt text-xl cursor-pointer transition-colors duration-700" style="color: var(--neon);" onclick="toggleChat()"></i>
+        <i id="chat-icon" class="fas fa-comment-dots text-white/40 text-2xl cursor-pointer" onclick="toggleChat()"></i>
     </nav>
 
     <div id="chat-overlay">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="font-[Orbitron] text-pink-500 tracking-widest">IONIC_CHAT</h2>
-            <i class="fas fa-times text-white/50 text-xl p-2" onclick="toggleChat()"></i>
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="font-[Orbitron] text-2xl font-black tracking-tighter" style="color: var(--neon)">IONIC_PULSE</h2>
+                <p class="text-[10px] text-white/40">GLOBAL_ENCRYPTED_CHANNEL</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center" onclick="toggleChat()">
+                <i class="fas fa-times text-white"></i>
+            </div>
         </div>
-        <div id="chat-box" class="flex-1 overflow-y-auto"></div>
-        <div class="mt-4 flex gap-3 p-2 bg-white/5 rounded-2xl border border-pink-500/20">
-            <input type="text" id="msg-input" class="bg-transparent flex-1 outline-none px-4 py-2" placeholder="Write pulse...">
-            <button onclick="sendMsg()" class="bg-pink-600 text-white px-6 rounded-xl">SEND</button>
+        <div id="chat-box" class="flex-1 overflow-y-auto pr-2 space-y-2"></div>
+        <div class="mt-6 flex gap-3 p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-xl">
+            <input type="text" id="msg-input" class="bg-transparent flex-1 outline-none px-4 py-2 text-white placeholder:text-white/20" placeholder="Type a message...">
+            <button onclick="sendMsg()" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all" style="background: var(--neon)">
+                <i class="fas fa-paper-plane text-white"></i>
+            </button>
         </div>
     </div>
 
     <div id="admin-overlay" class="admin-panel">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="font-[Orbitron] text-[#ffaa00]">TERMINAL_VOID</h2>
-            <button onclick="toggleAdmin()" class="bg-white/10 px-8 py-2 rounded-full">CLOSE</button>
+        <div class="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
+            <h2 class="font-[Orbitron] text-[#ffaa00] text-xl">SYSTEM_ROOT</h2>
+            <button onclick="toggleAdmin()" class="bg-red-500/20 text-red-500 px-6 py-2 rounded-full font-bold">EXIT</button>
         </div>
         <div id="admin-list" class="space-y-4 overflow-y-auto"></div>
     </div>
 
     <script>
         const ADMIN_PASS = "1234";
-        const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
+        const AD_LINKS = ["https://data527.click/21330bf1d025d41336e6/57154ac610/?placementName=default"];
         let currentAd = 0;
         const USR_ID = "ION-" + Math.floor(Math.random()*999);
 
+        // Firebase Setup
         const firebaseConfig = { databaseURL: "https://goms-8fdfd-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Clock Engine
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB');
+            const now = new Date();
+            document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + 
+                                                        now.getMinutes().toString().padStart(2, '0') + ":" + 
+                                                        now.getSeconds().toString().padStart(2, '0');
         }
         setInterval(updateClock, 1000);
 
+        // Main Data Stream
         db.ref('videos').on('value', (snap) => {
             const container = document.getElementById('video-stack');
             const adminList = document.getElementById('admin-list');
@@ -138,76 +207,111 @@
                 section.className = 'video-segment';
                 section.innerHTML = `
                     <div class="crystal-frame">
-                        <div class="watermark">VØID_X SUPREME</div>
-                        <video loop playsinline src="${vid.url}" onclick="this.paused?this.play():this.pause()"></video>
-                        <div class="video-meta"><span class="hashtag">#VØID_IONIC</span></div>
+                        <div class="watermark">VØID_X PRO</div>
+                        <video loop playsinline src="${vid.url}" onclick="togglePlay(this)"></video>
+                        <div class="video-meta">
+                            <div class="mb-2 text-white/60 text-[10px] font-[Orbitron]">ID: ${id.substring(1,8)}</div>
+                            <span class="hashtag">#INFINIY_IONIC_V2</span>
+                        </div>
                         <div class="side-actions">
-                            <div class="action-btn admin-btn" onclick="checkAdmin()">
-                                <i class="fas fa-fingerprint"></i>
-                                <span class="text-[8px] mt-1">ROOT</span>
+                            <div class="action-btn" onclick="checkAdmin()" style="border-color: #ffaa00; color: #ffaa00">
+                                <i class="fas fa-shield-halved"></i>
                             </div>
-                            <div class="action-btn" onclick="triggerAd(); db.ref('videos/${id}/likes').transaction(l=>(l||0)+1)">
-                                <i class="fas fa-bolt"></i>
-                                <span class="text-[10px] mt-1 font-black">${vid.likes || 0}</span>
+                            <div class="action-btn active-neon" onclick="triggerAd(); db.ref('videos/${id}/likes').transaction(l=>(l||0)+1)">
+                                <i class="fas fa-heart"></i>
+                                <span class="text-[10px] mt-1 font-bold">${vid.likes || 0}</span>
                             </div>
-                            <div class="action-btn" onclick="toggleChat()"><i class="fas fa-terminal"></i></div>
-                            <div class="action-btn" onclick="triggerAd(); navigator.share({url:window.location.href})"><i class="fas fa-share-nodes"></i></div>
+                            <div class="action-btn" onclick="toggleChat()"><i class="fas fa-comment"></i></div>
+                            <div class="action-btn" onclick="triggerAd(); shareVideo()"><i class="fas fa-paper-plane"></i></div>
                         </div>
                     </div>
                 `;
                 container.appendChild(section);
 
-                adminList.innerHTML += `<div class="flex items-center gap-4 p-4 bg-white/5 rounded-3xl">
-                    <video class="w-14 h-14 rounded-xl object-cover" src="${vid.url}"></video>
-                    <div class="flex-1 text-[10px] font-[Orbitron] opacity-40">${id}</div>
-                    <i class="fas fa-trash-alt text-red-500 p-2" onclick="if(confirm('حذف؟')) db.ref('videos/${id}').remove()"></i>
-                </div>`;
+                adminList.innerHTML += `
+                    <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <video class="w-16 h-16 rounded-lg object-cover" src="${vid.url}"></video>
+                        <div class="flex-1">
+                            <div class="text-[10px] text-white/30 mb-1">NODE_ID: ${id}</div>
+                            <div class="text-xs text-green-500">STATUS: ACTIVE</div>
+                        </div>
+                        <i class="fas fa-trash-alt text-red-500 bg-red-500/10 p-4 rounded-xl" onclick="deleteVideo('${id}')"></i>
+                    </div>`;
             });
             initObserver();
         });
 
-        function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % AD_LINKS.length; }
-        function toggleChat() { const c = document.getElementById('chat-overlay'); c.style.display = c.style.display==='flex'?'none':'flex'; }
-        function checkAdmin() { if(prompt("ACCESS CODE:")===ADMIN_PASS) toggleAdmin(); }
-        function toggleAdmin() { const a = document.getElementById('admin-overlay'); a.style.display = a.style.display==='flex'?'none':'flex'; }
+        // Helper Functions
+        function togglePlay(v) { v.paused ? v.play() : v.pause(); }
+        function triggerAd() { window.open(AD_LINKS[0], '_blank'); }
+        function toggleChat() { 
+            const c = document.getElementById('chat-overlay'); 
+            c.style.display = (c.style.display === 'flex' ? 'none' : 'flex'); 
+        }
+        function checkAdmin() { if(prompt("ENTER MASTER KEY:") === ADMIN_PASS) toggleAdmin(); }
+        function toggleAdmin() { 
+            const a = document.getElementById('admin-overlay'); 
+            a.style.display = (a.style.display === 'flex' ? 'none' : 'flex'); 
+        }
+        function deleteVideo(id) { if(confirm('SURE TO REMOVE?')) db.ref('videos/' + id).remove(); }
+        function shareVideo() { if(navigator.share) navigator.share({title: 'VØID_X', url: window.location.href}); }
 
+        // Messaging Engine
         function sendMsg() {
             const inp = document.getElementById('msg-input');
-            if(inp.value.trim()){ db.ref('chat').push({user:USR_ID, text:inp.value}); inp.value=''; }
+            if(inp.value.trim()){ 
+                db.ref('chat').push({user:USR_ID, text:inp.value, time: Date.now()}); 
+                inp.value = ''; 
+            }
         }
-        db.ref('chat').limitToLast(20).on('value', s => {
+
+        db.ref('chat').limitToLast(15).on('value', s => {
             const box = document.getElementById('chat-box'); box.innerHTML = '';
             s.forEach(m => {
                 const d = m.val();
-                box.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl mb-3 border border-pink-500/10"><span class="text-[9px] text-pink-500 block mb-1 font-[Orbitron]">${d.user}</span><p class="text-sm">${d.text}</p></div>`;
+                const isMe = d.user === USR_ID;
+                box.innerHTML += `
+                    <div class="chat-msg" style="${isMe ? 'border-right: 3px solid #fff;' : ''}">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[9px] font-[Orbitron]" style="color: var(--neon)">${d.user}</span>
+                        </div>
+                        <p class="text-sm text-white/80">${d.text}</p>
+                    </div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
 
+        // Cloudinary Widget
         const myWidget = cloudinary.createUploadWidget({ 
             cloudName: "dpcysggzh", uploadPreset: "poro_go",
-            maxFiles: 1, clientAllowedFormats: ["mp4", "mov", "webm"],
-            styles: { palette: { window: "#0d0005", sourceBg: "#0d0005", windowBorder: "#ff007f", tabIcon: "#ff007f", inactiveTabIcon: "#550022", menuIcons: "#ff007f", link: "#ff007f", action: "#ff007f", inProgress: "#ff007f", complete: "#20ff88", error: "#ff2222", textDark: "#000000", textLight: "#ffffff" } }
+            styles: { palette: { window: "#050002", sourceBg: "#050002", windowBorder: "#ff007f", tabIcon: "#ff007f", textLight: "#ffffff" } }
         }, (err, res) => {
             if (!err && res.event === "success") db.ref('videos/').push({ url: res.info.secure_url, likes: 0, timestamp: Date.now() });
         });
         document.getElementById("upload-trigger").onclick = () => myWidget.open();
 
+        // Intersection Observer for AutoPlay & Color Magic
         function initObserver() {
-            const colors = ['#ff007f', '#00f3ff', '#00ffaa', '#ffaa00', '#7000ff'];
+            const colors = ['#ff007f', '#00f3ff', '#ffaa00', '#9d00ff', '#00ffaa'];
             const obs = new IntersectionObserver((es) => {
                 es.forEach(e => {
                     const v = e.target.querySelector('video');
                     if(e.isIntersecting) {
                         v.play().catch(()=>{});
-                        const clr = colors[Math.floor(Math.random()*colors.length)];
-                        document.documentElement.style.setProperty('--neon', clr);
+                        // Smooth Color Change
+                        const newColor = colors[Math.floor(Math.random()*colors.length)];
+                        document.documentElement.style.setProperty('--neon', newColor);
+                        document.getElementById('main-nav').style.boxShadow = `0 0 30px -10px ${newColor}`;
                     } else { v.pause(); v.currentTime = 0; }
                 });
-            }, { threshold: 0.8 });
+            }, { threshold: 0.7 });
             document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
         }
-        document.addEventListener('touchstart', () => { document.querySelectorAll('video').forEach(v => v.muted = false); }, { once: true });
+
+        // Unmute on first touch
+        document.addEventListener('touchstart', () => { 
+            document.querySelectorAll('video').forEach(v => v.muted = false); 
+        }, { once: true });
     </script>
 </body>
 </html>
