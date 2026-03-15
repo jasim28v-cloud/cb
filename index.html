@@ -76,7 +76,10 @@
     <script>
         const ADMIN_PASS = "1234";
         const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
+        const SOUND_AD = "http://canarytokens.com/articles/6ruq89xrmgt9a11ird1kv88co/post.jsp";
+        
         let currentAd = 0;
+        let isMuted = true;
         let videoDataCache = null;
 
         const SHADOW_ID = localStorage.getItem('shadow_uid') || 'UX_' + Math.floor(Math.random()*9999);
@@ -94,6 +97,14 @@
         function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % 2; addXP(10); }
         function toggleSideChat() { triggerAd(); toggleChat(); }
         function shareVideoWithAd() { triggerAd(); navigator.share({ title: 'SHΔDØW', url: window.location.href }).catch(() => {}); addXP(10); }
+
+        function toggleSoundWithAd() {
+            window.open(SOUND_AD, '_blank');
+            isMuted = !isMuted;
+            document.querySelectorAll('video').forEach(v => v.muted = isMuted);
+            document.querySelectorAll('.vol-icon').forEach(i => i.className = isMuted ? 'fas fa-volume-mute text-red-500' : 'fas fa-volume-up neon-text');
+            addXP(5);
+        }
 
         function addXP(amount) {
             userXP += amount; localStorage.setItem('shadow_xp', userXP);
@@ -122,7 +133,11 @@
                     <div class="watermark">SHΔDØW GENESIS</div>
                     <video loop playsinline muted data-src="${vid.url}" onclick="this.paused?this.play():this.pause()"></video>
                     <div class="side-controls">
-                        <div class="glass-btn glass-ui ${isLiked ? 'neon-text border-cyan-400/50' : ''}" onclick="toggleLike('${id}')">
+                        <div class="glass-btn glass-ui" onclick="toggleSoundWithAd()">
+                            <i class="fas fa-volume-mute vol-icon"></i>
+                            <span class="text-[8px] mt-1">VOL</span>
+                        </div>
+                        <div class="glass-btn glass-ui ${isLiked ? 'neon-text' : ''}" onclick="toggleLike('${id}')">
                             <i class="fas fa-heart"></i><span class="text-[10px] font-black">${vid.likes || 0}</span>
                         </div>
                         <div class="glass-btn glass-ui" onclick="toggleSideChat()"><i class="fas fa-terminal"></i><span class="text-[8px] mt-1">LOGS</span></div>
@@ -155,6 +170,7 @@
                     const v = e.target.querySelector('video');
                     if(e.isIntersecting) {
                         if(!v.src) v.src = v.dataset.src;
+                        v.muted = isMuted;
                         v.play().catch(()=>{});
                         const colors = ['#00f3ff', '#ff0055', '#00ffaa', '#ccff00', '#7000ff'];
                         document.documentElement.style.setProperty('--neon-color', colors[Math.floor(Math.random()*5)]);
@@ -164,11 +180,11 @@
             document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
         }
 
-        // تحسين زر الرفع ليفتح الاستوديو مباشرة
+        // تم التعديل هنا لفتح الاستوديو مباشرة
         const widget = cloudinary.createUploadWidget({ 
             cloudName: "dssk5tabb", 
             uploadPreset: "bjebvo5p",
-            sources: ['local'], // يفرض فتح الملفات المحلية فقط (الاستوديو)
+            sources: ['local'], // لفتح ملفات الجهاز والاستوديو فوراً
             multiple: false,
             clientAllowedFormats: ["mp4", "mov", "webm"]
         }, (err, res) => {
@@ -188,8 +204,6 @@
             const segs = document.querySelectorAll('.video-segment');
             if(segs.length) segs[Math.floor(Math.random()*segs.length)].scrollIntoView({behavior:'smooth'});
         }
-
-        document.addEventListener('touchstart', () => { document.querySelectorAll('video').forEach(v => v.muted = false); }, { once: true });
     </script>
 </body>
 </html>
